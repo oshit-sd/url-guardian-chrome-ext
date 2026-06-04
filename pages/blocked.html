@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title id="page-title">No internet</title>
+  <style>
+    /* ═══════════════════════════════════════════
+       CHROME DARK MODE NO-INTERNET PAGE — EXACT
+    ═══════════════════════════════════════════ */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    html, body {
+      height: 100%;
+      background: #292929;
+      color: #e8e8e8;
+      font-family: Roboto, 'Segoe UI', Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* ── Main centered layout — Chrome offsets left ── */
+    .error-wrap {
+      flex: 1;
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-start;
+      padding: 96px 0 48px 230px;
+    }
+
+    .error-box {
+      max-width: 440px;
+      width: 100%;
+    }
+
+    /* ── Dino SVG icon — pixel-art T-Rex ── */
+    .dino-wrap {
+      margin-bottom: 22px;
+      line-height: 0;
+    }
+
+    /* ── Typography — exact Chrome dark mode ── */
+    h1 {
+      font-size: 22px;
+      font-weight: 400;
+      color: #e8e8e8;
+      margin-bottom: 18px;
+      letter-spacing: -0.01em;
+    }
+
+    .try-label {
+      font-size: 14px;
+      color: #bdc1c6;
+      margin-bottom: 6px;
+    }
+
+    .try-list {
+      list-style: none;
+      margin-bottom: 20px;
+    }
+    .try-list li {
+      font-size: 14px;
+      color: #bdc1c6;
+      padding: 2px 0 2px 16px;
+      position: relative;
+      line-height: 1.6;
+    }
+    .try-list li::before {
+      content: '•';
+      position: absolute;
+      left: 2px;
+      color: #bdc1c6;
+    }
+
+    .error-code {
+      font-size: 13px;
+      color: #8a8a8a;
+      letter-spacing: 0.02em;
+      margin-top: 4px;
+    }
+
+    /* ── Buttons ── */
+    .btn-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 22px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      height: 36px;
+      padding: 0 16px;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 500;
+      font-family: Roboto, Arial, sans-serif;
+      cursor: pointer;
+      border: none;
+      outline: none;
+      letter-spacing: 0.01em;
+      transition: background 0.12s, box-shadow 0.12s;
+    }
+
+    .btn-reload {
+      background: #8ab4f8;
+      color: #202124;
+    }
+    .btn-reload:hover { background: #93bbf9; }
+
+    .btn-secondary {
+      background: transparent;
+      color: #8ab4f8;
+    }
+    .btn-secondary:hover { background: rgba(138,180,248,0.08); }
+
+    /* ── Details expand (Chrome style) ── */
+    details { margin-bottom: 0; }
+    details summary {
+      font-size: 14px;
+      color: #8ab4f8;
+      cursor: pointer;
+      list-style: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      user-select: none;
+      outline: none;
+    }
+    details summary::-webkit-details-marker { display: none; }
+    .arrow {
+      display: inline-block;
+      width: 0; height: 0;
+      border-top: 4px solid transparent;
+      border-bottom: 4px solid transparent;
+      border-left: 6px solid #8ab4f8;
+      transition: transform 0.15s;
+    }
+    details[open] .arrow { transform: rotate(90deg); }
+    .details-body {
+      margin-top: 8px;
+      font-size: 13px;
+      color: #bdc1c6;
+      line-height: 1.7;
+      padding-left: 2px;
+    }
+
+    /* ═════════════════════════════════════
+       HIDDEN GUARDIAN LOCK — bottom-right
+    ═════════════════════════════════════ */
+    #guardian-lock {
+      position: fixed;
+      bottom: 22px;
+      right: 22px;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.09);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      /* Very subtle by default — hard to notice */
+      opacity: 0.18;
+      filter: blur(0.6px);
+      transition: opacity 0.25s, filter 0.25s, background 0.2s, transform 0.15s, border-color 0.2s;
+      z-index: 8000;
+      /* Ensure pointer events work */
+      pointer-events: all;
+    }
+    #guardian-lock:hover {
+      opacity: 0.80;
+      filter: blur(0px);
+      background: rgba(138,180,248,0.15);
+      border-color: rgba(138,180,248,0.35);
+      transform: scale(1.12);
+    }
+    #guardian-lock svg {
+      width: 18px;
+      height: 18px;
+      fill: #bdc1c6;
+      pointer-events: none;
+    }
+
+    /* ═════════════════════════════════════
+       UNLOCK OVERLAY
+    ═════════════════════════════════════ */
+    #unlock-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      z-index: 99998;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      /* hidden by default */
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 0.2s ease, visibility 0.2s ease;
+    }
+    #unlock-overlay.open {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    /* ═════════════════════════════════════
+       UNLOCK POPUP
+    ═════════════════════════════════════ */
+    #unlock-popup {
+      background: #3c3c3c;
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 18px;
+      padding: 32px 28px 26px;
+      width: 330px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5), 0 20px 60px rgba(0,0,0,0.4);
+      position: relative;
+      transform: scale(0.88) translateY(12px);
+      opacity: 0;
+      transition: transform 0.28s cubic-bezier(0.34,1.56,0.64,1),
+                  opacity 0.22s ease;
+      z-index: 99999;
+    }
+    #unlock-overlay.open #unlock-popup {
+      transform: scale(1) translateY(0);
+      opacity: 1;
+    }
+
+    /* Close X */
+    #popup-close {
+      position: absolute;
+      top: 12px; right: 12px;
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      border: none;
+      background: transparent;
+      color: #8a8a8a;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, color 0.15s;
+      line-height: 1;
+      padding: 0;
+    }
+    #popup-close:hover { background: rgba(255,255,255,0.1); color: #e8e8e8; }
+
+    /* Icon */
+    .popup-icon-ring {
+      width: 52px; height: 52px;
+      background: rgba(138,180,248,0.15);
+      border: 1.5px solid rgba(138,180,248,0.3);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+    }
+    .popup-icon-ring svg { width: 26px; height: 26px; fill: #8ab4f8; }
+
+    /* Title */
+    #popup-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #e8e8e8;
+      text-align: center;
+      margin-bottom: 4px;
+    }
+
+    /* Site pill */
+    #popup-site {
+      font-size: 12px;
+      color: #8a8a8a;
+      text-align: center;
+      background: rgba(255,255,255,0.07);
+      border-radius: 20px;
+      padding: 3px 12px;
+      display: block;
+      margin: 0 auto 20px;
+      width: fit-content;
+      font-family: 'Roboto Mono', monospace, sans-serif;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* Input */
+    .input-wrap {
+      position: relative;
+      margin-bottom: 6px;
+    }
+    #pwd-input {
+      width: 100%;
+      padding: 11px 42px 11px 14px;
+      background: rgba(255,255,255,0.08);
+      border: 1.5px solid rgba(255,255,255,0.15);
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: Roboto, Arial, sans-serif;
+      color: #e8e8e8;
+      outline: none;
+      transition: border-color 0.15s, background 0.15s;
+      letter-spacing: 2px;
+      caret-color: #8ab4f8;
+    }
+    #pwd-input::placeholder { letter-spacing: 0; color: #666; }
+    #pwd-input:focus {
+      border-color: #8ab4f8;
+      background: rgba(138,180,248,0.06);
+    }
+    #pwd-input.has-error {
+      border-color: #f28b82;
+      background: rgba(242,139,130,0.07);
+    }
+
+    /* Eye btn */
+    #eye-btn {
+      position: absolute;
+      right: 10px; top: 50%;
+      transform: translateY(-50%);
+      background: none; border: none;
+      cursor: pointer; color: #666;
+      padding: 4px;
+      display: flex; align-items: center;
+      transition: color 0.15s;
+    }
+    #eye-btn:hover { color: #bdc1c6; }
+    #eye-btn svg { width: 18px; height: 18px; fill: currentColor; pointer-events: none; }
+
+    /* Error */
+    #popup-err {
+      font-size: 12px;
+      color: #f28b82;
+      min-height: 18px;
+      margin-bottom: 14px;
+      padding-left: 2px;
+    }
+
+    /* Action buttons */
+    .popup-btns {
+      display: flex;
+      gap: 10px;
+    }
+    .pbtn {
+      flex: 1;
+      height: 40px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 500;
+      font-family: Roboto, Arial, sans-serif;
+      cursor: pointer;
+      border: none;
+      outline: none;
+      transition: background 0.15s, opacity 0.15s;
+    }
+    .pbtn-cancel {
+      background: rgba(255,255,255,0.10);
+      color: #bdc1c6;
+    }
+    .pbtn-cancel:hover { background: rgba(255,255,255,0.15); }
+    .pbtn-unlock {
+      background: #8ab4f8;
+      color: #202124;
+      font-weight: 600;
+    }
+    .pbtn-unlock:hover { background: #93bbf9; }
+    .pbtn-unlock:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* Shake */
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      18%      { transform: translateX(-8px); }
+      36%      { transform: translateX(8px); }
+      54%      { transform: translateX(-5px); }
+      72%      { transform: translateX(5px); }
+      88%      { transform: translateX(-2px); }
+    }
+    .shake { animation: shake 0.45s ease; }
+
+    /* Responsive */
+    @media (max-width: 680px) {
+      .error-wrap { padding: 64px 24px 48px 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════
+     CHROME DARK DINO ERROR PAGE
+══════════════════════════════════ -->
+<div class="error-wrap">
+  <div class="error-box">
+
+    <!-- Pixel-art T-Rex (Chrome's exact dino, dark-mode tint) -->
+    <div class="dino-wrap">
+      <svg width="120" height="68" viewBox="0 0 120 68" fill="none" xmlns="http://www.w3.org/2000/svg" style="image-rendering:pixelated">
+        <!-- Ground line -->
+        <rect x="0" y="62" width="120" height="2" fill="#535353"/>
+        <!-- Body -->
+        <rect x="34" y="20" width="30" height="26" fill="#535353"/>
+        <!-- Neck -->
+        <rect x="34" y="12" width="14" height="10" fill="#535353"/>
+        <!-- Head top -->
+        <rect x="34" y="6"  width="20" height="8"  fill="#535353"/>
+        <!-- Snout -->
+        <rect x="54" y="10" width="8"  height="6"  fill="#535353"/>
+        <!-- Eye -->
+        <rect x="50" y="8"  width="4"  height="4"  fill="#292929"/>
+        <!-- Nostril -->
+        <rect x="60" y="12" width="2"  height="2"  fill="#292929"/>
+        <!-- Arm -->
+        <rect x="48" y="30" width="6"  height="4"  fill="#535353"/>
+        <rect x="52" y="34" width="4"  height="4"  fill="#535353"/>
+        <!-- Tail -->
+        <rect x="14" y="34" width="20" height="8"  fill="#535353"/>
+        <rect x="8"  y="38" width="8"  height="6"  fill="#535353"/>
+        <rect x="4"  y="42" width="6"  height="4"  fill="#535353"/>
+        <!-- Legs (standing) -->
+        <rect x="38" y="46" width="8"  height="14" fill="#535353"/>
+        <rect x="50" y="46" width="8"  height="14" fill="#535353"/>
+        <!-- Feet -->
+        <rect x="34" y="58" width="12" height="4"  fill="#535353"/>
+        <rect x="48" y="58" width="12" height="4"  fill="#535353"/>
+      </svg>
+    </div>
+
+    <h1 id="page-h1">Press space to play</h1>
+
+    <p class="try-label">Try:</p>
+    <ul class="try-list">
+      <li id="try1">Checking the network cables, modem, and router</li>
+      <li id="try2">Reconnecting to Wi-Fi</li>
+    </ul>
+
+    <div class="error-code" id="err-code">DNS_PROBE_FINISHED_NO_INTERNET</div>
+
+    <div class="btn-row">
+      <button class="btn btn-reload" id="btn-reload">Reload</button>
+      <button class="btn btn-secondary" id="btn-back">Go back</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     HIDDEN GUARDIAN LOCK (bottom-right)
+══════════════════════════════════ -->
+<div id="guardian-lock" tabindex="0" role="button" aria-label="Unlock protected page">
+  <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+    <path d="M18 8h-1V6c0-2.761-2.239-5-5-5S7 3.239 7 6v2H6c-1.104 0-2 .896-2 2v10
+             c0 1.104.896 2 2 2h12c1.104 0 2-.896 2-2V10c0-1.104-.896-2-2-2z
+             M12 17c-1.104 0-2-.896-2-2s.896-2 2-2 2 .896 2 2-.896 2-2 2z
+             M15.1 8H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+  </svg>
+</div>
+
+<!-- ══════════════════════════════════
+     UNLOCK OVERLAY + POPUP
+══════════════════════════════════ -->
+<div id="unlock-overlay">
+  <div id="unlock-popup" role="dialog" aria-modal="true" aria-labelledby="popup-title">
+
+    <button id="popup-close" aria-label="Close">✕</button>
+
+    <div class="popup-icon-ring">
+      <svg viewBox="0 0 24 24">
+        <path d="M18 8h-1V6c0-2.761-2.239-5-5-5S7 3.239 7 6v2H6c-1.104 0-2 .896-2 2v10
+                 c0 1.104.896 2 2 2h12c1.104 0 2-.896 2-2V10c0-1.104-.896-2-2-2z
+                 M12 17c-1.104 0-2-.896-2-2s.896-2 2-2 2 .896 2 2-.896 2-2 2z
+                 M15.1 8H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/>
+      </svg>
+    </div>
+
+    <div id="popup-title">Protected Page</div>
+    <span id="popup-site">example.com</span>
+
+    <div class="input-wrap">
+      <input type="password" id="pwd-input"
+             placeholder="Enter password to unlock"
+             autocomplete="off" spellcheck="false" />
+      <button id="eye-btn" type="button" tabindex="-1" aria-label="Show/hide password">
+        <svg id="eye-svg" viewBox="0 0 24 24">
+          <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5
+                   s9.27-3.11 11-7.5C21.27 7.61 17 4.5 12 4.5z
+                   m0 12.5c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z
+                   m0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/>
+        </svg>
+      </button>
+    </div>
+
+    <div id="popup-err"></div>
+
+    <div class="popup-btns">
+      <button class="pbtn pbtn-cancel" id="btn-cancel">Cancel</button>
+      <button class="pbtn pbtn-unlock" id="btn-unlock">Unlock</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════
+   URL GUARDIAN — blocked page script
+   Fully self-contained, no external deps
+══════════════════════════════════════════ */
+(function () {
+  'use strict';
+
+  /* ── Read URL params ── */
+  var params      = new URLSearchParams(window.location.search);
+  var originalUrl = params.get('originalUrl') || '';
+  var siteName    = params.get('siteName')    || '';
+
+  /* ── Derive display hostname ── */
+  var displayHost = siteName;
+  if (!displayHost && originalUrl) {
+    try { displayHost = new URL(originalUrl).hostname; } catch(_) {}
+  }
+
+  /* ── Update page text to look real ── */
+  if (displayHost) {
+    document.title = displayHost + ' - Site can\'t be reached';
+    document.getElementById('page-title').textContent = document.title;
+    /* Keep "Press space to play" on h1 — that's what Chrome shows */
+    document.getElementById('popup-site').textContent = displayHost;
+  }
+
+  /* ── Reload / Back ── */
+  document.getElementById('btn-reload').onclick = function() {
+    window.location.reload();
+  };
+  document.getElementById('btn-back').onclick = function() {
+    window.history.back();
+  };
+
+  /* ══════════════════════════════════════
+     LOCK ICON → POPUP
+  ══════════════════════════════════════ */
+  var lockEl   = document.getElementById('guardian-lock');
+  var overlay  = document.getElementById('unlock-overlay');
+  var popup    = document.getElementById('unlock-popup');
+  var closeBtn = document.getElementById('popup-close');
+  var cancelBtn= document.getElementById('btn-cancel');
+  var unlockBtn= document.getElementById('btn-unlock');
+  var pwdInput = document.getElementById('pwd-input');
+  var errDiv   = document.getElementById('popup-err');
+  var eyeBtn   = document.getElementById('eye-btn');
+  var eyeSvg   = document.getElementById('eye-svg');
+
+  var EYE_OPEN  = 'M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5C21.27 7.61 17 4.5 12 4.5zm0 12.5c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z';
+  var EYE_CLOSE = 'M12 7c2.76 0 5 2.24 5 5 0 .65-.13 1.26-.36 1.83l2.92 2.92c1.51-1.26 2.7-2.89 3.43-4.75C21.27 7.61 17 4.5 12 4.5c-1.25 0-2.45.2-3.57.57l2.16 2.16C11.21 7.1 11.6 7 12 7zM2 4.27l2.28 2.28.46.46C3.08 8.3 1.78 10.02 1 12c1.73 4.39 6 7.5 11 7.5 1.55 0 3.03-.3 4.38-.84l.42.42L19.73 22 21 20.73 3.27 3 2 4.27zM7.53 9.8l1.55 1.55c-.05.21-.08.43-.08.65 0 1.66 1.34 3 3 3 .22 0 .44-.03.65-.08l1.55 1.55c-.67.33-1.41.53-2.2.53-2.76 0-5-2.24-5-5 0-.79.2-1.53.53-2.2zm4.31-.78l3.15 3.15.02-.16c0-1.66-1.34-3-3-3l-.17.01z';
+
+  /* ── Open popup ── */
+  function openPopup() {
+    pwdInput.value = '';
+    errDiv.textContent = '';
+    pwdInput.classList.remove('has-error');
+    unlockBtn.disabled = false;
+    unlockBtn.textContent = 'Unlock';
+    overlay.classList.add('open');
+    /* Focus after transition */
+    setTimeout(function() { pwdInput.focus(); }, 180);
+  }
+
+  /* ── Close popup ── */
+  function closePopup() {
+    overlay.classList.remove('open');
+  }
+
+  /* ── Wire lock icon — multiple event types for reliability ── */
+  lockEl.addEventListener('click',    openPopup);
+  lockEl.addEventListener('keydown',  function(e) {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openPopup(); }
+  });
+
+  /* ── Close triggers ── */
+  closeBtn.addEventListener('click',  closePopup);
+  cancelBtn.addEventListener('click', closePopup);
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) closePopup();
+  });
+
+  /* ── Eye toggle ── */
+  eyeBtn.addEventListener('click', function() {
+    var isPass = pwdInput.type === 'password';
+    pwdInput.type = isPass ? 'text' : 'password';
+    eyeSvg.querySelector('path').setAttribute('d', isPass ? EYE_CLOSE : EYE_OPEN);
+    pwdInput.focus();
+  });
+
+  /* ── Enter key on input ── */
+  pwdInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') doUnlock();
+  });
+
+  /* ── Clear error on type ── */
+  pwdInput.addEventListener('input', function() {
+    pwdInput.classList.remove('has-error');
+    errDiv.textContent = '';
+  });
+
+  /* ── Unlock button ── */
+  unlockBtn.addEventListener('click', doUnlock);
+
+  function doUnlock() {
+    var pwd = pwdInput.value;
+    if (!pwd) {
+      showErr('Please enter the password.');
+      return;
+    }
+
+    unlockBtn.disabled = true;
+    unlockBtn.textContent = '···';
+
+    /* Send to background service worker */
+    try {
+      chrome.runtime.sendMessage(
+        { type: 'VERIFY_PASSWORD', password: pwd },
+        function(res) {
+          /* Handle extension context errors */
+          if (chrome.runtime.lastError) {
+            console.warn('[Guardian] runtime error:', chrome.runtime.lastError.message);
+            showErr('Extension error — try reloading the page.');
+            unlockBtn.disabled = false;
+            unlockBtn.textContent = 'Unlock';
+            return;
+          }
+
+          if (res && res.success) {
+            /* ── Correct password ── */
+            unlockBtn.textContent = '✓ Unlocked!';
+            unlockBtn.style.background = '#81c995';
+
+            chrome.runtime.sendMessage(
+              { type: 'WHITELIST_TEMP', siteUrl: siteName },
+              function() {
+                if (chrome.runtime.lastError) {
+                  console.warn('[Guardian] whitelist error:', chrome.runtime.lastError.message);
+                }
+                /* Small delay so user sees the success state */
+                setTimeout(function() {
+                  window.location.href = originalUrl;
+                }, 500);
+              }
+            );
+
+          } else {
+            /* ── Wrong password ── */
+            if (res && res.reason === 'no_password') {
+              showErr('No password set. Please set one in the extension.');
+            } else {
+              showErr('Incorrect password. Try again.');
+            }
+            unlockBtn.disabled = false;
+            unlockBtn.textContent = 'Unlock';
+            pwdInput.value = '';
+            pwdInput.focus();
+            /* Shake the popup */
+            popup.classList.remove('shake');
+            void popup.offsetWidth; /* reflow */
+            popup.classList.add('shake');
+            popup.addEventListener('animationend', function() {
+              popup.classList.remove('shake');
+            }, { once: true });
+          }
+        }
+      );
+    } catch (ex) {
+      console.error('[Guardian] sendMessage threw:', ex);
+      showErr('Cannot reach extension. Try reloading.');
+      unlockBtn.disabled = false;
+      unlockBtn.textContent = 'Unlock';
+    }
+  }
+
+  function showErr(msg) {
+    errDiv.textContent = '⚠ ' + msg;
+    pwdInput.classList.add('has-error');
+    pwdInput.focus();
+  }
+
+})();
+</script>
+</body>
+</html>
